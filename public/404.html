@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/" />
+    <title>AIScope</title>
+    <script>
+      // GitHub Pages 对任何非根路径的 SPA 路由会返回 404，
+      // 所以我们把 pathname + search + hash 存下来，
+      // 重定向回根路径后再由 React Router 根据 query 恢复路由。
+      (function () {
+        var base = document.querySelector('meta[name="base-path"]');
+        var basePath = base && base.content ? base.content : '/';
+        if (basePath.charAt(basePath.length - 1) !== '/') basePath += '/';
+        var l = window.location;
+        var path = l.pathname + l.search + l.hash;
+        // 避免把 base 自身再包一层
+        if (path.indexOf(basePath) === 0) path = path.slice(basePath.length - 1);
+        sessionStorage.setItem('spa-redirect', path);
+        l.replace(basePath);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

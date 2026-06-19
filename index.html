@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="AIScope - 交互式 AI 学习平台，通过可视化理解注意力机制、RAG、Agent 构建" />
     <title>AIScope - 交互式 AI 学习平台</title>
+    <script>
+      // 如果 404.html 把用户从一个深链重定向回根路径，
+      // 这里把之前的路径恢复到浏览器历史，让 React Router 继续渲染正确的页面。
+      (function () {
+        var redirect = sessionStorage.getItem('spa-redirect');
+        if (redirect && redirect !== '' && redirect !== '/') {
+          sessionStorage.removeItem('spa-redirect');
+          window.history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

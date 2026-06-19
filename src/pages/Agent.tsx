@@ -1,4 +1,5 @@
 import { Bot, Wrench, Users, MemoryStick, Clock } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import Card from '../components/ui/Card'
 import { useI18n } from '../i18n/context'
@@ -189,12 +190,12 @@ export default function AgentPage() {
                 >
                   {t.stayTuned}
                 </a>
-                <a
-                  href="/attention"
+                <Link
+                  to="/attention"
                   className="px-8 py-4 rounded-xl font-heading font-semibold text-lg glow-button"
                 >
                   {t.learnAttention}
-                </a>
+                </Link>
               </div>
             </div>
           </div>

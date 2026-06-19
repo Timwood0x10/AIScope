@@ -18,10 +18,15 @@ import EmbeddingGame from './pages/games/EmbeddingGame'
 import TransformerStackGame from './pages/games/TransformerStackGame'
 import LossSurfaceGame from './pages/games/LossSurfaceGame'
 
+// vite.config.ts 的 base 在构建时注入到 import.meta.env.BASE_URL，
+// 这里去掉末尾的 / 作为 BrowserRouter 的 basename，
+// 这样 GitHub Pages 子路径部署时路由才会正常工作
+const basename = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+
 function App() {
   return (
     <I18nProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/attention" element={<Attention />} />
