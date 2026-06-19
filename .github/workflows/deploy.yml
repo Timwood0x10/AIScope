@@ -5,6 +5,10 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+# 让所有内置 action 跑在 Node 24 上，避免 Node 20 deprecation 告警
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   pages: write
@@ -21,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22 (LTS)
         uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -35,16 +39,14 @@ jobs:
 
       - name: Build (GitHub Pages sub-path)
         env:
-          # 仓库名是什么，VITE_BASE_PATH 就是 /什么/，自动适配
-          # VITE_BASE_PATH is /<repo-name>/ so sub-path deployment works
+          # 仓库名是什么，VITE_BASE_PATH 就是 /什么/，自动适配子路径部署
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
         run: npm run build
 
       - name: Setup Pages
+        # 注意：第一次跑之前需要先去仓库 Settings → Pages → Source 选 "GitHub Actions"
+        # 手动开一次 Pages 后，GITHUB_TOKEN 才有权限访问 Pages API
         uses: actions/configure-pages@v5
-        with:
-          # 自动启用 Pages（第一次推送时，仓库可能还没开 Pages）
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
