@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [master]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -22,9 +22,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -35,13 +35,16 @@ jobs:
 
       - name: Build (GitHub Pages sub-path)
         env:
-          # 若仓库名不是 AIScope，请把 /AIScope/ 改成 /你的仓库名/
-          # If the repo name is not AIScope, change /AIScope/ to /YOUR_REPO_NAME/
+          # 仓库名是什么，VITE_BASE_PATH 就是 /什么/，自动适配
+          # VITE_BASE_PATH is /<repo-name>/ so sub-path deployment works
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
         run: npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # 自动启用 Pages（第一次推送时，仓库可能还没开 Pages）
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
