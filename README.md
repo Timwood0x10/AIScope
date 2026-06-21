@@ -85,25 +85,6 @@ npm run build      # production build
 npm run preview    # preview the dist locally
 ```
 
-### Project layout
-
-```
-AIScope/
-├── .github/workflows/deploy.yml   # automated GitHub Pages deploy
-├── src/
-│   ├── components/                # layout / UI / chart components
-│   ├── pages/                     # route pages + 11 mini-games
-│   ├── i18n/                      # Chinese / English switching
-│   └── utils/                     # math / vector utilities
-├── public/                        # static assets (favicon etc.)
-├── index.html
-├── package.json
-├── vite.config.ts
-├── tailwind.config.js
-├── postcss.config.js
-└── tsconfig.json
-```
-
 ### License
 
 [Apache-2.0](LICENSE) — free for learning, teaching and remixing. Please attribute the original notes by [Timwood0x10](https://github.com/Timwood0x10).

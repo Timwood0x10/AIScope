@@ -85,26 +85,6 @@ npm run build      # 生产构建
 npm run preview    # 本地预览 dist 产物
 ```
 
-### 目录结构
-
-```
-AIScope/
-├── .github/workflows/deploy.yml   # GitHub Pages 自动部署
-├── src/
-│   ├── components/                # 通用组件 (布局 / UI / 图表)
-│   ├── pages/                     # 路由页面 + 11 个小游戏
-│   ├── i18n/                      # 中英文切换
-│   ├── stores/                    # zustand 全局状态
-│   └── utils/                     # 数学 / 向量工具
-├── public/                        # 静态资源（favicon 等）
-├── index.html
-├── package.json
-├── vite.config.ts
-├── tailwind.config.js
-├── postcss.config.js
-└── tsconfig.json
-```
-
 ### License
 
 [Apache-2.0](LICENSE) — 可自由用于学习、教学与二次创作，但请注明来源于 [Timwood0x10](https://github.com/Timwood0x10) 的笔记库。

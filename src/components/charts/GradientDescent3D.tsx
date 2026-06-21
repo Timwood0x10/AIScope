@@ -19,6 +19,7 @@ export default function GradientDescent3D({
   functionName = 'sphere',
 }: GradientDescent3DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const { lang } = useI18n()
   const isZh = lang === 'zh'
   const [isRunning, setIsRunning] = useState(false)
@@ -78,20 +79,26 @@ export default function GradientDescent3D({
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const container = containerRef.current
+    const width = container?.clientWidth || 600
+    const height = container?.clientHeight || 400
+    if (width < 50 || height < 50) return
+
     const dpr = window.devicePixelRatio || 1
-    const width = canvas.offsetWidth
-    const height = canvas.offsetHeight
     canvas.width = width * dpr
     canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.scale(dpr, dpr)
-
-    // Clear canvas
-    ctx.fillStyle = '#0F172A'
-    ctx.fillRect(0, 0, width, height)
 
     const padding = 40
     const plotWidth = width - padding * 2
     const plotHeight = height - padding * 2
+
+    // Clear canvas
+    ctx.fillStyle = '#0F172A'
+    ctx.fillRect(0, 0, width, height)
 
     // Draw contour lines
     const numLevels = 15
@@ -165,6 +172,30 @@ export default function GradientDescent3D({
 
   }, [trajectory, lossFn, bounds])
 
+  // ResizeObserver: 确保画布尺寸正确
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const raf = requestAnimationFrame(() => {
+      // 触发重绘
+      setTrajectory(t => [...t])
+    })
+
+    let resizeObserver: ResizeObserver | null = null
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        setTrajectory(t => [...t])
+      })
+      resizeObserver.observe(container)
+    }
+
+    return () => {
+      cancelAnimationFrame(raf)
+      if (resizeObserver) resizeObserver.disconnect()
+    }
+  }, [])
+
   useEffect(() => {
     return () => {
       if (animationRef.current) {
@@ -212,11 +243,10 @@ export default function GradientDescent3D({
         </div>
       </div>
 
-      <div className="relative h-[400px]">
+      <div ref={containerRef} className="relative h-[400px]">
         <canvas
           ref={canvasRef}
-          className="w-full h-full rounded-lg"
-          style={{ width: '100%', height: '400px' }}
+          className="rounded-lg"
         />
       </div>
 

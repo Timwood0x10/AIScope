@@ -16,6 +16,7 @@ export default function AttentionHeatmap({
   showWeights = true,
 }: AttentionHeatmapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const { lang } = useI18n()
   const isZh = lang === 'zh'
 
@@ -27,17 +28,25 @@ export default function AttentionHeatmap({
     return { Q, K, V, weights: attentionWeights, output }
   }, [seqLength, headDim, scaleFactor])
 
-  useEffect(() => {
+  const draw = () => {
     const canvas = canvasRef.current
     if (!canvas) return
-
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    // 使用容器尺寸作为 canvas 尺寸，避免 offsetWidth=0 的问题
+    const container = containerRef.current
+    const containerWidth = container?.clientWidth || 400
+    const containerHeight = container?.clientHeight || 300
+    const size = Math.min(containerWidth, containerHeight, 500)
+    if (size < 50) return
+
     const dpr = window.devicePixelRatio || 1
-    const size = Math.min(canvas.offsetWidth, canvas.offsetHeight)
     canvas.width = size * dpr
     canvas.height = size * dpr
+    canvas.style.width = `${size}px`
+    canvas.style.height = `${size}px`
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.scale(dpr, dpr)
 
     const cellSize = size / seqLength
@@ -72,14 +81,43 @@ export default function AttentionHeatmap({
         )
       }
     }
+  }
+
+  // 初始渲染 + 依赖项变化时重绘
+  useEffect(() => {
+    draw()
   }, [weights, seqLength])
+
+  // 使用 ResizeObserver 监听容器尺寸变化，确保画布始终正确渲染
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    // 延迟一帧再绘制，确保布局完成
+    const raf = requestAnimationFrame(() => draw())
+
+    let resizeObserver: ResizeObserver | null = null
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => draw())
+      resizeObserver.observe(container)
+    }
+    // 兼容回退：监听 window resize
+    const onResize = () => draw()
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      if (resizeObserver) resizeObserver.disconnect()
+      window.removeEventListener('resize', onResize)
+    }
+  }, [])
 
   return (
     <div className="w-full h-full flex flex-col gap-4">
-      <div className="relative flex-1 min-h-[300px]">
+      <div ref={containerRef} className="relative flex-1 min-h-[300px] flex items-center justify-center">
         <canvas
           ref={canvasRef}
-          className="w-full h-full rounded-lg"
+          className="rounded-lg"
         />
       </div>
 
